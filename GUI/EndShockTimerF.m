@@ -1,0 +1,3 @@
+function EndShockTimerF(~,~)
+acqLightoff();
+end

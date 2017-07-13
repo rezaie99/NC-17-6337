@@ -1,0 +1,1639 @@
+<?xml version="1.0"?>
+<!DOCTYPE ImageAcquisitionInfo [
+<!--
+
+This XML file is used to store static information for a particular
+vendor's image acquistion devices.
+
+-->
+
+<!-- The ImageAcquisitionInfo node is the root node of the file.  It
+     contains zero or one Help nodes and zero or more Device nodes. -->
+<!ELEMENT ImageAcquisitionInfo (Help?, Property*, Include*, Source*, TriggerInfo?, Device*)>
+
+<!-- The Help node, if present, must contain one or more AdaptorHelp nodes. -->
+<!ELEMENT Help (AdaptorHelp+)>
+
+<!-- AdaptorHelp nodes have some amount of text, followed by zero or more
+     DeviceHelp nodes followed by zero or one SeeAlso lines.  The text will
+     be formated in MATLAB exactly as it is entered in this file so no extra
+     spacing or indentation should be used.  Because the node is of mixed
+     type, it is not possible to specify the exact order or number of any of
+     these elements within the DTD, so care should be taken when adding
+     them. -->
+<!ELEMENT AdaptorHelp (#PCDATA | DeviceHelp | SeeAlso)*>
+
+<!-- The AdaptorHelp node contains one attribute, the name of the property
+     to which the help applies. -->
+<!ATTLIST AdaptorHelp property CDATA #REQUIRED>
+
+<!-- The AdaptorHelp node contains the DeviceHelp node which adds extra help
+     for a specific piece of hardware. -->
+<!ELEMENT DeviceHelp (#PCDATA)>
+
+<!-- The device attribute of the DeviceHelp node contains the name of the
+     board that the help is for.  This should be the same as the name
+     attribute of the Device node for the hardware. -->
+<!ATTLIST DeviceHelp device CDATA #REQUIRED>
+
+<!-- The SeeAlso node of the AdaptorHelp node specifies the "see also" line
+     that should appear in MATLAB. -->
+<!ELEMENT SeeAlso (#PCDATA)>
+
+<!-- Device nodes can have zero or more Section nodes followed by zero or
+     more VideoFormat, Include, Section, or Property nodes and zero or one
+     TriggerInfo nodes. -->
+<!ELEMENT Device (VideoFormat*, Include*, Section*, Property*, TriggerInfo?)>
+
+<!-- Device nodes have exactly one property "name", which is the name of the
+device as known by the cooresponding adaptor.  This name usually is the name
+of the device from the SDK.  -->
+<!ATTLIST Device name CDATA #REQUIRED>
+
+<!-- The VideoFormat element can define properties and trigger information that
+     is specific to a known video format.  It is legal for the VideoFormat
+     element to also contain Include and Section elements. -->
+<!ELEMENT VideoFormat (Include*, Section*, Property*, TriggerInfo?)>
+
+<!-- VideoFormat nodes have exactly one property "name", which is the video
+     format supported by the device.  This video format usually is the name of
+     the video format as used by the adaptor. -->
+<!ATTLIST VideoFormat name CDATA #REQUIRED>
+
+<!-- Section nodes can have zero or more Include nodes.  The Include nodes
+     can be followed by zero or more Property nodes or zero or one TriggerInfo
+     nodes.  It is not possible to mix Property nodes and TriggerInfo nodes in
+     the same Section.  The Property and TriggerInfo nodes follow the same
+     rules as the nodes directly under a device node. The name attribute is
+     required and is used by the Include nodes to locate a particular 
+     section. -->
+<!ELEMENT Section (Include*, (Property* | TriggerInfo?))> 
+<!ATTLIST Section name CDATA #REQUIRED>
+
+<!-- The optional Include element can be used to simplify the XML file.  By
+including -->
+<!ELEMENT Include EMPTY>
+
+<!-- The value of the tag property should be the name of a Section node. -->
+<!ATTLIST Include tag CDATA #REQUIRED>
+
+<!-- The Property node describes the properties for a specific peice of
+     hardware.  Property nodes can have zero or more EnumConstraintValue
+     nodes.  The EnumConstraintValue nodes are only valid if the constraint
+     attribute is equal to "enum". -->
+<!ELEMENT Property (EnumConstraintValue*)>
+
+<!-- The attributes of the Property node.  The attributes are:
+       constraint     - Constraints on property values.  Defines the what kind of
+                        property will be created.  Valid values are:
+
+                        bounded           - A bounded property.  Requires the 
+			                    min and max attributes to be set.
+	                enum              - A list of enumerations.
+	                none              - No constraints, property can hold 
+	                                    any valid MATLAB variable.
+	                zeroorpositive    - Value which must be greater than 
+	                                    zero.
+	                zeroinforpositive - Value which must be greater than 
+	                                    zero or infinite.
+                        positive          - Value which must be positive.
+	                inforpositive     - Value must be positive or infinite.
+       deviceSpecific - Indicates whether or not the property is vendor
+                        specific.  Valid values are:
+                          true  - The property is vendor specific.
+                          false - The property is not vendor specific.
+       name           - The property name as it should be listed
+       readOnly       - The read-only status of the property.  Valid values 
+                        are:
+                          always         - The property is always read-only.
+                          never          - The property is never read-only.
+                          whileRunning   - The property is read-only when the 
+                                           device's Running property is "on".
+       type           - The data type of the property.  Valid values are:
+                          cell   - Value is a cell array.  Requires a 
+                                   constraint value of none.
+                          double - Value is a double value.  Requires a 
+                                   constraint value of none, zeroorpositive, 
+                                   zeroinforpositive, or bounded.
+                          int    - Value is an integer value.  Requires a 
+                                   constraint value of none, zeroorpositive, 
+                                   zeroinforpositive, positive, inforpositive,
+                                   or bounded.
+                          string - Value is a string.  Requires a constraint 
+                                   value of none or enum.
+       min            - The minimum allowable value of the property.
+       max            - The maximum allowable value of the property.
+       optionial      - If set to "on", the property will not be created and 
+                        added to the object by default.  Instead, the adaptor 
+                        must explicity create the object.  If not present or 
+                        set to "off" the property will automatically be created
+                        and added to the object.
+       default        - The default value of the property.
+
+     The constraint, deviceSpecific, name, readOnly, and type attributes are 
+     required.  The min, max, optional, and default attributes are optional. 
+-->
+<!ATTLIST Property constraint (bounded | enum | none | zeroorpositive | zeroinforpositive | positive | inforpositive)  #REQUIRED
+		   deviceSpecific (true | false)                  #REQUIRED
+		   name           CDATA                           #REQUIRED
+		   readOnly       (always | never | whileRunning) #REQUIRED
+		   type           (cell | double | int | string)  #REQUIRED
+		   min            CDATA                           #IMPLIED
+		   max            CDATA                           #IMPLIED
+		   optional       (on | off)                      #IMPLIED
+		   default        CDATA                           #IMPLIED>
+
+<!-- The EnumConstraintValue does not have any sub-nodes.  Both the id and
+     name attributes are required. The name of the constraint is the name
+     that will be displayed within MATLAB.  The id can be set to any unique
+     identifier.  It is typically set to some value that is recognized by
+     the vendor's SDK.--> 
+<!ELEMENT EnumConstraintValue EMPTY>
+<!ATTLIST EnumConstraintValue id   CDATA #REQUIRED
+                              name CDATA #REQUIRED>
+
+<!-- The Source element defines a source to be added to the object.  The
+     name is the name of the sources and will the value that appears in the
+     source's "Name" property.  The id can be any unique identifier.  It
+     is typically set to some value that is recognized by the vendor's SDK.
+-->
+<!ELEMENT Source EMPTY>
+<!ATTLIST Source id   CDATA #REQUIRED
+                 name CDATA #REQUIRED>
+
+<!-- The TriggerInfo node must have one or more TriggerSource nodes. It
+     defines the triggers that will be available for a particular device. -->
+<!ELEMENT TriggerInfo (Include*, TriggerSource+)>
+
+<!-- Each TriggerSource must have one or more TriggerCondition nodes. The
+     TriggerSource node has two attributes, id and name, which are both
+     required. The name will appear in the TriggerSource field of the data
+     returned by the TRIGGERINFO function.  The id can be any unique
+     identifier.  It is typically set to some value that is recognized by
+     the vendor's SDK. -->
+<!ELEMENT TriggerSource (TriggerCondition*, Include*)>
+<!ATTLIST TriggerSource id   CDATA #REQUIRED
+                        name CDATA #REQUIRED>
+			
+<!-- The TriggerCondition is a terminal node.  Both the name and id
+     attributes are required.  The name will appear in the TriggerCondition
+     field of the data returned by the TRIGGERINFO function.  The id can be
+     any unique identifier.  It is typically set to some value that is
+     recognized by the vendor's SDK. -->
+<!ELEMENT TriggerCondition EMPTY>
+<!ATTLIST TriggerCondition id   CDATA #REQUIRED
+                           name CDATA #REQUIRED>
+
+]>
+<!-- 
+
+CP 1-13-2003 
+Copyright 2001-2006 The MathWorks, Inc.
+
+$Revision: 3$
+$Date: Dienstag, 22. Juni 2010 15:21:41$
+
+-->
+<ImageAcquisitionInfo>
+	<Help>
+		<AdaptorHelp property="Brightness">
+            Controls the image brightness (black level).
+            		
+            The feature value represents the number of grey levels by which the image will be brightened.
+            
+            Depending on the acquisition device, this property may have an associated 
+            mode property with supported states.<SeeAlso>BrightnessMode</SeeAlso>
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="BrightnessMode">
+            Specify the Brightness property to be controlled by supported states.
+            
+            Supported states:
+            
+            off     - Brightness is unaltered. 
+            on      - Brightness is adjusted by the given value. 
+            onepush - The brightness value is automatically adjusted once. 
+            auto    - The brightness value is automatically adjusted.
+            
+            <SeeAlso>Brightness</SeeAlso>
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="Autoexposure">
+            Controls the target grey level for automatic shutter and gain operation.		
+            The feature value represents the targeted mean grey level.
+            
+		</AdaptorHelp>
+
+		<AdaptorHelp property="Sharpness">
+            Controls the image sharpening performed by the camera.
+            		
+            The feature value represents the degree of sharpening.
+            
+            Depending on the acquisition device, this property may have an associated 
+            mode property with supported states.
+            
+            <SeeAlso>SharpnessMode</SeeAlso>
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="SharpnessMode">
+            Specify the Sharpness property to be controlled by supported states.
+            
+            Supported States: 
+            
+            off     - no sharpening 
+            on      - Image is sharpened.
+            
+            <SeeAlso>Sharpness</SeeAlso>
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="Hue">
+            Controls the hue adjustment performed by the camera.
+            The feature value represents the hue adjustment.
+            
+            Depending on the acquisition device, this property may have an associated 
+            mode property with supported states.
+            
+            <SeeAlso>HueMode</SeeAlso>
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="HueMode">
+            Specify the Hue property to be controlled by supported states.
+            
+            Supported States:
+            
+            off     - Hue is unaltered. 
+            on      - Hue is adjusted by the given value. 
+            onepush - The hue value is automatically adjusted once. 
+            auto    - The hue value is automatically adjusted.
+            
+            <SeeAlso>Hue</SeeAlso>
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="Saturation">
+            Controls the saturation adjustment performed by the camera.
+            The feature value represents the saturation adjustment.
+            
+            Depending on the acquisition device, this property may have an associated 
+            mode property with supported states.
+            
+            <SeeAlso>SaturationMode</SeeAlso>
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="SaturationMode">
+            Specify the Saturation property to be controlled by supported states.
+            
+            Supported States: 
+            
+            off     - Saturation is unaltered. 
+            on      - Saturation is adjusted by the given value. 
+            onepush - The saturation value is automatically adjusted once. 
+            auto    - The saturation value is automatically adjusted.
+            
+            <SeeAlso>Saturation</SeeAlso>
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="Gamma">
+            Controls the gamma adjustment performed by the camera. The feature value represents 
+            
+            the gamma adjustment.
+            
+            Depending on the acquisition device, this property may have an associated 
+            mode property with supported states.
+            
+            <SeeAlso>GammaMode</SeeAlso>
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="GammaMode">
+            Specify the Gamma property to be controlled by supported states.
+            
+            Supported States: 
+            
+            off     - no gamma correction applied 
+            on      - gamma correction active 
+            onepush - The gamma value is automatically adjusted once. 
+            auto    - The gamma value is automatically adjusted.
+            
+            <SeeAlso>Gamma</SeeAlso>
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="Shutter">
+            Controls the exposure time used for image acquisition.
+            
+            The feature value represents the exposure time in raw format affected by the feature Timebase.
+            
+            The actual exposure time implies an additional, camera-specific period of time represented by the feature ExposureOffset.
+            
+            This property can be used to affect the device's frame rate.
+            
+            Depending on the acquisition device, this property may have an associated mode property with supported states.
+            
+            <SeeAlso>ShutterMode, Timebase, ExposureOffset</SeeAlso>
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="ShutterMode">
+            Specify the shutter property to be controlled by supported states.
+            
+            Supported States: 
+            
+            on      - fixed exposure time 
+            onepush - Exposure time is automatically adjusted once. 
+            auto    - Exposure time is automatically adjusted.
+            
+            <SeeAlso>Shutter</SeeAlso>
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="Gain">
+            Controls the gain applied to the sensor signal.
+            
+            The feature value represents the amount of gain applied.
+            
+            Depending on the acquisition device, this property may have an associated 
+            mode property with supported states.
+            
+            <SeeAlso>GainMode</SeeAlso>
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="GainMode">
+            Specify the Gain property to be controlled by supported states.
+            
+            Supported States: 
+            
+            off     - no gain applied 
+            on      - sensor signal is amplified accordingly to the given gain value 
+            onepush - The gain value is automatically adjusted once. 
+            auto    - The gain value is automatically adjusted.
+            
+            <SeeAlso>Gain</SeeAlso>
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="FrameCounter">
+            Counter for acquired images.
+            
+            The feature value represents the number of images.
+            
+            Depending on the acquisition device, this property may have an associated 
+            mode property with supported states.
+            
+            <SeeAlso>FrameCounterMode</SeeAlso>
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="FrameCounterMode">
+            Specify the FrameCounter property to be controlled by supported states.
+            
+            Supported States: 
+            
+            on      - Standard mode of operation 
+            onepush - Reset of frame counter.
+            
+            <SeeAlso>FrameCounter</SeeAlso>
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="AutoFunctionAOILeft">
+            Controls the left offset of the area examined by auto functions.
+            
+            The feature value represents a number of pixels.
+            
+            The value has to comply with a certain step size represented by AutoFunctionAOIXUnits.
+            
+            Depending on the acquisition device, this property may have an associated 
+            mode property with supported states.
+
+            <SeeAlso>AutoFunctionAOIMode, AutoFunctionAOIXUnits</SeeAlso>
+		
+		</AdaptorHelp>
+		
+		<AdaptorHelp property="AutoFunctionAOITop">
+            Controls the top offset of the area examined by auto functions.
+
+            The feature value represents a number of pixels.
+
+            The value has to comply with a certain step size represented by AutoFunctionAOIYUnits.
+
+            Depending on the acquisition device, this property may have an associated 
+            mode property with supported states.
+
+            <SeeAlso>AutoFunctionAOIMode, AutoFunctionAOIYUnits</SeeAlso>
+		
+		</AdaptorHelp>
+		
+		<AdaptorHelp property="AutoFunctionAOIWidth">
+            Controls the width of the area examined by auto functions.
+
+            The feature value represents a number of pixels.
+
+            The value has to comply with a certain step size represented by AutoFunctionAOIXUnits.
+
+            Depending on the acquisition device, this property may have an associated 
+            mode property with supported states.
+
+            <SeeAlso>AutoFunctionAOIMode, AutoFunctionAOIXUnits</SeeAlso>
+		
+		</AdaptorHelp>
+		
+		<AdaptorHelp property="AutoFunctionAOIHeight">
+            Controls the height of the area examined by auto functions.
+
+            The feature value represents a number of pixels.
+
+            The value has to comply with a certain step size represented by AutoFunctionAOIYUnits.
+
+            Depending on the acquisition device, this property may have an associated 
+            mode property with supported states.
+
+            <SeeAlso>AutoFunctionAOIMode, AutoFunctionAOIYUnits</SeeAlso>
+		
+		</AdaptorHelp>
+		
+		<AdaptorHelp property="AutoFunctionAOIXUnits">
+            Indicates the step size which the AutoFunctionAOILeft and AutoFunctionAOIWidth settings have to comply with.
+
+            The feature value represents a number of pixels.
+
+            Depending on the acquisition device, this property may have an associated 
+            mode property with supported states.
+
+            <SeeAlso>AutoFunctionAOIMode, AutoFunctionAOILeft, AutoFunctionAOIWidth</SeeAlso>
+		
+		</AdaptorHelp>
+		
+		<AdaptorHelp property="AutoFunctionAOIYUnits">
+            Indicates the step size which the AutoFunctionAOITop and AutoFunctionAOIHeight settings have to comply with.
+
+            The feature value represents a number of pixels.
+
+            Depending on the acquisition device, this property may have an associated 
+            mode property with supported states.
+
+            <SeeAlso>AutoFunctionAOIMode, AutoFunctionAOITop, AutoFunctionAOIHeight</SeeAlso>
+		
+		</AdaptorHelp>
+		
+		<AdaptorHelp property="AutoFunctionAOIMode">
+            Specify the AutoFunctionAOI properties to be controlled by supported states.
+
+            Supported States: 
+
+            off       - The whole image is examined by auto functions. 
+            on        - Auto functions examine only the specified area. 
+            showImage - The specified area is marked in transmitted images. 
+
+            All AutoFunctionAOI features internally share the same state.
+
+            SetState functions applied to any AutoFunctionAOI feature affect all AutoFunctionAOI features.
+
+            <SeeAlso>AutoFunctionAOILeft, AutoFunctionAOITop, AutoFunctionAOIWidth, AutoFunctionAOIHeight, AutoFunctionAOIXUnits, AutoFunctionAOIYUnits</SeeAlso>
+		
+		</AdaptorHelp>
+		
+		<AdaptorHelp property="WhitebalanceUB">
+            Controls the white balance (UB) adjustment performed by the camera.
+
+            The feature value represents the UB adjustment.
+
+            Depending on the acquisition device, this property may have an associated 
+            mode property with supported states.
+
+            <SeeAlso>WhitebalanceMode</SeeAlso>
+		
+		</AdaptorHelp>
+		
+		<AdaptorHelp property="WhitebalanceVR">
+            Controls the white balance (VR) adjustment performed by the camera.
+
+            The feature value represents the VR adjustment.
+
+            Depending on the acquisition device, this property may have an associated 
+            mode property with supported states.
+
+            <SeeAlso>WhitebalanceMode</SeeAlso>
+		
+		</AdaptorHelp>
+		
+		<AdaptorHelp property="WhitebalanceGR">
+            Controls the advanced whitebalance (GR) adjustment performed by the camera.
+
+            Advanced whitebalance is only supported by cameras based on complementary sensors.
+
+            The feature value represents the GR (mode 0) or GR/CY (mode 1) channel adjustment.
+
+            Depending on the acquisition device, this property may have an associated 
+            mode property with supported states.
+
+            <SeeAlso>WhitebalanceMode</SeeAlso>
+		
+		</AdaptorHelp>
+		
+		<AdaptorHelp property="WhitebalanceMG">
+            Controls the advanced whitebalance (MG) adjustment performed by the camera.
+		
+            Advanced whitebalance is only supported by cameras based on complementary sensors.
+
+            The feature value represents the MG (mode 0) or MG/YE (mode 1) channel adjustment.
+
+            Depending on the acquisition device, this property may have an associated 
+            mode property with supported states.
+
+            <SeeAlso>WhitebalanceMode</SeeAlso>
+		
+		</AdaptorHelp>
+		
+		<AdaptorHelp property="WhitebalanceCY">
+            Controls the advanced whitebalance (CY) adjustment performed by the camera.
+		
+            Advanced whitebalance is only supported by cameras based on complementary sensors.
+
+            The feature value represents the CY (mode 0) or CY/MG (mode 1) channel adjustment.
+
+            Depending on the acquisition device, this property may have an associated 
+            mode property with supported states.
+
+            <SeeAlso>WhitebalanceMode</SeeAlso>
+		
+		</AdaptorHelp>
+		
+		<AdaptorHelp property="WhitebalanceYE">
+            Controls the advanced whitebalance (YE) adjustment performed by the camera.
+
+            Advanced whitebalance is only supported by cameras based on complementary sensors.
+
+            The feature value represents the YE (mode 0) or YE/GR (mode 1) channel adjustment.
+
+            Depending on the acquisition device, this property may have an associated 
+            mode property with supported states.
+
+            <SeeAlso>WhitebalanceMode</SeeAlso>
+
+		</AdaptorHelp>
+		
+		<AdaptorHelp property="WhitebalanceMode">
+            Specify the Whitebalance properties to be controlled by supported states.
+
+            Supported States: 
+
+            off     - whitebalance is unaltered. 
+            on      - whitebalance is adjusted by the given values. 
+            onepush - The whitebalance values are automatically adjusted once. 
+            auto    - The whitebalance values are automatically adjusted. 
+ 
+            The white balance features internally share the same state.
+            Set state applied to any white balance feature affect all valid features.
+
+            <SeeAlso>WhitebalanceUB, WhitebalanceVR, WhitebalanceGR, WhitebalanceMG, WhitebalanceCY, WhitebalanceYE</SeeAlso>
+		
+		</AdaptorHelp>
+		
+		<AdaptorHelp property="ExposureOffset">
+            Indicates the camera-specific offset added to the chosen exposure time.
+		
+            The feature value represents the offset in microseconds.
+
+		</AdaptorHelp>
+		
+		<AdaptorHelp property="Timebase">
+            Controls the timebase applied to the shutter value.
+            		
+            The feature value represents an index of the chosen timebase.
+            
+            ID Timebase  
+            
+            0  1 us  
+            1  2 us  
+            2  5 us  
+            3  10 us  
+            4  20 us  
+            5  50 us  
+            6  100 us  
+            7  200 us  
+            8  500 us  
+            9  1000 us
+
+        </AdaptorHelp>
+
+		<AdaptorHelp property="ExtendedShutter">
+            Controls the exposure time used for image acquisition.
+		
+            The feature value represents the exposure time in microseconds additional to
+
+            <SeeAlso>ExposureOffset</SeeAlso>.
+		
+		</AdaptorHelp>
+
+		<AdaptorHelp property="AutoShutterLow">Controls the minimum shutter time for auto-shutter operation.
+		
+            The feature value represents the minimum exposure time in microseconds.
+			
+		</AdaptorHelp>
+		
+		<AdaptorHelp property="AutoShutterHigh">
+		    Controls the maximum shutter time for auto-shutter operation.
+
+            The feature value represents the minimum exposure time in microseconds.
+		
+		</AdaptorHelp>
+		
+		<AdaptorHelp property="AutoGainLow">
+		    Controls the minimum gain value for auto-gain operation.
+		
+		</AdaptorHelp>
+		
+		<AdaptorHelp property="AutoGainHigh">Controls the maximum gain value for auto-gain operation.
+		
+		</AdaptorHelp>
+		
+		<AdaptorHelp property="LUT">
+            Controls the lookup table feature. The feature value represent the index of the applied lookup table.			
+            
+            <SeeAlso>LUTMode</SeeAlso>
+		
+		</AdaptorHelp>
+		
+		<AdaptorHelp property="LUTData">
+            Controls the LUT data.
+            
+            <SeeAlso>LUTMode</SeeAlso>
+            
+		</AdaptorHelp>
+		
+		<AdaptorHelp property="LUTMaxSize">
+            Indicates the size of an entire lookup table.
+
+            The feature value represent the size in bytes.
+            
+            <SeeAlso>LUTMode</SeeAlso>
+            
+		</AdaptorHelp>
+		<AdaptorHelp property="LUTSize">
+            Controls the LUT size.
+            
+            <SeeAlso>LUTMode</SeeAlso>
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="LUTBitsPerVal">
+            Indicates the size of a single lookup table entry.
+            
+            The feature value represent the number of bits a single table entry consists of.
+            
+            <SeeAlso>LUTMode</SeeAlso>
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="LUTMode">
+            Specify the LUT property to be controlled by supported states.
+            
+            The data array may contain 8 bit or 16 bit values depending on the cameras capabilities.
+            
+            LUT data may only be uploaded while the camera is stopped. This means, preview has to be 'off'.
+            
+            Supported States: 
+            
+            on      - lookup table is used 
+            off     - lookup table is not used
+            load    - Upload the given LUT
+            
+            For Upload these features are used.
+            
+            <SeeAlso>LUT, LUTSize, LUTMaxSize, LUTData</SeeAlso>
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="ColorCorrectionMode">
+            Controls the cameras color correction.
+            			
+            Supported States: 
+            
+            on      - color correction enabled 
+            off     - color correction disabled 			
+            		</AdaptorHelp>
+            		<AdaptorHelp property="TriggerDelayADV">
+            Controls the time interval by which trigger signals are delayed in microseconds.
+            			
+            See Trigger for a trigger feature overview.
+            
+            <SeeAlso>TriggerDelayADVMode</SeeAlso>
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="TriggerDelayADVMode">
+            Specify the TriggerDelayADV property to be controlled by supported states.
+            
+            Supported States:
+            
+            on      - Trigger is delayed by the given value. 
+            off     - no trigger delay			
+            
+            <SeeAlso>TriggerDelayADV</SeeAlso>
+            		</AdaptorHelp>
+            		<AdaptorHelp property="TriggerDelay">
+            Controls the time interval by which trigger signals are delayed in microseconds.
+            			
+            See Trigger for a trigger feature overview.
+            
+            <SeeAlso>TriggerDelayMode</SeeAlso>
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="TriggerDelayMode">
+            Specify the TriggerDelay property to be controlled by supported states.
+            
+            Supported States:
+            
+            on      - Trigger is delayed by the given value. 
+            off     - no trigger delay			
+            
+            <SeeAlso>TriggerDelay</SeeAlso>
+		</AdaptorHelp>
+
+		<AdaptorHelp property="XMirrorImageMode">
+            Controls the horizontal image mirror feature.
+            
+            Supported States:
+            
+            on      - Image is mirrored horizontally by camera.  
+            off     - standard mode of operation 			
+            		</AdaptorHelp>
+            		<AdaptorHelp property="SoftResetMode">
+            Triggers the cameras soft reset.
+            
+            Supported States:
+            
+            onepush - Softreset is triggered.   
+            off     - standard mode of operation
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="HighSNR">
+            Controls the high SNR mode.
+            
+            The feature value represents the number of images acquired for a single averaged image.
+            
+            Depending on the acquisition device, this property may have an associated 
+            mode property with supported states.
+            
+            <SeeAlso>HighSNRMode</SeeAlso>
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="HighSNRMode">
+            Specify the HighSNR property to be controlled by supported states.
+            
+            Supported States:
+            
+            on      - high SNR mode enabled   
+            off     - high SNR mode disabled
+            
+            <SeeAlso>HighSNR</SeeAlso>
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="UserProfile">
+            Controls the user profile feature.
+            			
+            The feature value represents the user profile id, also called memory channel.
+            
+            Depending on the acquisition device, this property may have an associated 
+            mode property with supported states.
+            
+            <SeeAlso>UserProfileMode</SeeAlso>
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="UserProfileMode">
+            Specify the UserProfile property to be controlled by supported states.
+            			
+            Supported States:
+            
+            off      - standard mode of operation    
+            onepush  - sets the currently selected profile id as default. (will be restored at camera startup)
+            loaddata - load a user profile from camera memory
+            savedata - stores the active settings as user profile
+            
+            <SeeAlso>UserProfile</SeeAlso>
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="DelayedIntegrationEnable">
+            Controls the delayed 'integration enable' feature.
+            			
+            The feature value represents the delay time in microseconds.
+            
+            Depending on the acquisition device, this property may have an associated 
+            mode property with supported states.
+            
+            <SeeAlso>DelayedIntegrationEnableMode</SeeAlso>
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="DelayedIntegrationEnableMode">
+            Specify the DelayedIntegrationEnable property to be controlled by supported states.
+            			
+            Supported States:
+            
+            on      - Delayed 'Integration Enable'     
+            off     - No Delayed 'Integration Enable'
+            
+            <SeeAlso>DelayedIntegrationEnable</SeeAlso>
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="DSNUCorrection">
+            Controls the DSNU correction.
+            			
+            The feature value represents the number of images taken into account for DSNU data computation.
+            
+            Depending on the acquisition device, this property may have an associated 
+            mode property with supported states.
+            
+            <SeeAlso>DSNUCorrectionMode</SeeAlso>
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="DSNUCorrectionMode">
+            Specify the DSNUCorrection property to be controlled by supported states.
+            			
+            Supported States:
+            
+            on        - DSNU correction active      
+            off       - No DSNU correction
+            showimage - Transfer DSNU data as image
+            onepush   - Compute DSNU data
+            loaddata  - Load DSNU data from camera memory
+            savedata  - Save DSNU data to camera memory 
+            cleardata - Clear DSNU data
+            
+            <SeeAlso>DSNUCorrection</SeeAlso>
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="BlemishCorrection">
+            Controls the blemish pixel correction.
+            			
+            The feature value represents the number of images taken into account for blemish pixel data computation.
+            
+            Depending on the acquisition device, this property may have an associated 
+            mode property with supported states.
+            
+            <SeeAlso>BlemishCorrectionMode</SeeAlso>
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="BlemishCorrectionMode">
+            Specify the BlemishCorrection property to be controlled by supported states.
+            			
+            Supported States:
+            
+            on        - blemish pixel correction active      
+            off       - No blemish pixel correction
+            showimage - Transfer blemish pixel data as image
+            onepush   - Compute blemish pixel data 
+            loaddata  - Load blemish pixel data from camera memory
+            savedata  - Save blemish pixel data to camera memory
+            cleardata - Clear blemish pixel data
+            
+            <SeeAlso>BlemishCorrection</SeeAlso>
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="Shading">
+            Controls the shading correction.
+            
+            The feature value represents the number of images taken into account for shading data computation.
+            
+            Depending on the acquisition device, this property may have an associated 
+            mode property with supported states.
+            
+            <SeeAlso>ShadingMode</SeeAlso>
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="ShadingMode">
+            Specify the Shading property to be controlled by supported states.
+            			
+            Supported States:
+            
+            on        - shading correction active      
+            off       - No shading correction
+            showimage - Transfer shading data as image
+            onepush   - Compute shading data 
+            loaddata  - Load shading data from camera memory
+            savedata  - Save shading data to camera memory
+            load      - Upload shading correction image data into the camera. 
+                        The preview has to be deactivated (stopped) before this parameter can be changed.
+            save      - Download shading correction image data from the camera. 
+                        The preview has to be deactivated (stopped) before this parameter can be changed.
+            
+            <SeeAlso>Shading</SeeAlso>
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="ShadingData">
+            File name used for shading data.
+            Default file name is Shading.bmp.
+            <SeeAlso>ShadingMode, Shading</SeeAlso>
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="ShadingSize">
+            Displays the maximum size of a shading image.
+		</AdaptorHelp>
+
+		<AdaptorHelp property="HDRKneePointCount">
+            Controls the number of kneepoints used in HDR mode.
+            
+            The feature value represents the number of kneepoints.
+            
+            <SeeAlso>HDRMode</SeeAlso>
+		</AdaptorHelp>
+
+		<AdaptorHelp property="HDRKneePoint1">
+            Controls the first kneepoint used in HDR mode.
+            
+            The feature value represents the exposure time in microseconds.
+            
+            <SeeAlso>HDRMode</SeeAlso>
+		</AdaptorHelp>
+
+		<AdaptorHelp property="HDRKneePoint2">
+            Controls the second kneepoint used in HDR mode.
+            
+            The feature value represents the exposure time in microseconds.
+            
+            <SeeAlso>HDRMode</SeeAlso>
+		</AdaptorHelp>
+
+		<AdaptorHelp property="HDRKneePoint3">
+            Controls the third kneepoint used in HDR mode.
+            
+            The feature value represents the exposure time in microseconds.
+            
+            <SeeAlso>HDRMode</SeeAlso>
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="HDRMode">
+            Specify the HDR properties to be controlled by supported states.
+            
+            Supported States:
+            
+            on        - HDR mode enabled      
+            off       - HDR mode disabled
+            
+            All HDR features internally share the same state. Setting the state applied to any HDR feature affect all HDR features.				
+            
+            <SeeAlso>HDRKneePointCount, HDRKneePoint1, HDRKneePoint2, HDRKneePoint3</SeeAlso> 
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="FrameMemorySize">
+            Only available for Firewire devices.
+            
+            This feature provides a read-only value representing the size of one complete image in bytes.
+            		</AdaptorHelp>
+            		<AdaptorHelp property="ReducedSmearMode">
+            Controls the 'Low Smear' mode.
+            
+            Supported States:
+            
+            on        - low smear mode enabled      
+            off       - low smear mode disabled
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="ParamUpdateTiming">
+            Controls the 'Parameter Update Timing' feature.
+            
+            The feature value represents the timing mode.
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="SIS">
+            Controls the 'Secure Image Signature' feature.
+            
+            The feature value represents the vertical position of the image signature.
+            
+            <SeeAlso>SISMode</SeeAlso>
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="SISMode">
+            Specify the SIS property to be controlled by supported states.
+            
+            Supported States:
+            
+            on        - secure image signature enabled       
+            off       - secure image signature disabled 
+            
+            <SeeAlso>SIS</SeeAlso>
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="SISMarlin">
+            camera support for marlin secure image signature.
+            
+            <SeeAlso>SISMarlinMode</SeeAlso>
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="SISMarlinMode">
+            Specify the SISMarlin property to be controlled by supported states.
+            
+            Supported States:
+            
+            on        - secure image signature enabled       
+            off       - secure image signature disabled 
+            
+            <SeeAlso>SISMarlin</SeeAlso>
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="SISPike">
+            camera support for the pike secure image signature.
+            
+            <SeeAlso>SISPikeMode</SeeAlso>
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="SISPikeMode">
+            Specify the SISPike property to be controlled by supported states.
+            
+            Supported States:
+            
+            on        - secure image signature enabled       
+            off       - secure image signature disabled 
+            
+            <SeeAlso>SISPike</SeeAlso>
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="CameraBusyMode">
+            Sets the busy state of the camera.
+            
+            Supported States:
+            
+            on        - camera is busy       
+            off       - camera is available
+             
+		</AdaptorHelp>
+
+		<AdaptorHelp property="ChannnelGainBalance">
+            Determine the balance of the channel gain if the camera is read-out via more than one channel.
+             
+		</AdaptorHelp>
+
+		<AdaptorHelp property="ChannnelGainBalanceMode">
+            Sets the ChannnelGainBalance state of the camera.
+            
+            Supported States:
+            
+            on        - feature can be used      
+            auto      - set channel gain balance to auto mode (API function)
+            savedata  - store channel gain balance to auto mode
+             
+		</AdaptorHelp>
+
+		<AdaptorHelp property="Logging">
+            Controls the library's logging feature.
+            
+            The feature value represents the logging verbosity level.
+            
+            
+            Overview
+            
+            The Universal API provides logging capabilities for debug purposes. Log messages may be either written to harddisk directly or buffered in system memory to minimize harddisk access. Buffered output is flushed when the internal buffer is filled, on request and on dll unloading.
+            
+            The logging verbosity may be set to one of the following levels: 
+            
+            Fatal (0) for unrecoverable errors 
+            Error (1) for recoverable errors 
+            Warning (2) for unanticipated behavior 
+            Info (3) for information about the current flow 
+            Debug (4) for information mainly useful for the developers of this API 
+            
+            
+            Usage
+            
+            If you'd like to enable logging for your UniAPI application, provide a "UniControl.ini" file in the same directory as the file UniControl.dll or in the startup directory of your application with the following contents:
+            
+            [Logging]
+            Targets = File
+            TargetParam = F:\Projects\UniAPI\UniControl.log
+            TargetIdent = Uni_Log
+            TargetLevel=3       ; LOG_FATAL = 0, LOG_ERROR = 1, LOG_WARNING = 2, LOG_INFO = 3, LOG_DEBUG = 4
+            
+            The section [Logging] must be used. The following properties are possible: 
+            Targets may have values None and File. In the first case, no logging is performed (and no file is created).
+            
+            In the second case, the following values are needed: 
+            
+            TargetParam is the file name if the logging target is a file 
+            TargetIdent may contain the identifier for this logging target 
+            TargetLevel describes the logging level as defined above
+            
+            The logging feature may be accessed without any camera present. The camera ID will be ignored.
+            
+            <SeeAlso>LoggingMode</SeeAlso>
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="LoggingMode">
+            Specify the Logging property to be controlled by supported states.
+            
+            Supported States: 
+            
+            auto      - logfile will be flushed automatically 
+            on        - logfile needs to be flushed manually 
+            onepush   - flush logfile manually 
+            
+            <SeeAlso>Logging</SeeAlso>
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="ListAllCamerasMode">
+            Determines the behaviour of the Image Acquisition Hardware search
+            
+            Supported States:
+            
+            on        - all cameras on bus will be listed        
+            off       - only cameras not busy are listed 
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="PhySpeed">
+            Only available for Firewire devices.
+            
+            This parameter controls the real physical speed that is used to talk with the connected device.
+            
+            The feature value represents an index of the chosen speed.
+            
+            ID Bus Speed  
+            
+            0 100 MBit/s  
+            1 200 MBit/s  
+            2 400 MBit/s  
+            3 800 MBit/s  
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="FrameBufferCount">
+            Only available for Firewire devices.
+            
+            Number of frame buffers that shall be allocated when the capture is started.
+            
+            Per default this value is set to 16.
+		</AdaptorHelp>
+
+		<AdaptorHelp property="UseIRMForBWMode">
+            Only available for Firewire devices.
+            This feature determines, whether the packet size used for image transfer shall be registered with the isochronous resource manager.
+            
+            Supported States: 
+            
+            on        - register bandwidth 
+            off       - do not register bandwidth (default)
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="FrameMemorySize">
+            Only available for Firewire devices.
+            
+            This feature provides a read-only value representing the size of one complete image in bytes.
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="IRMFreeBW">
+            Only available for Firewire devices.
+            
+            This feature provides a read-only value representing the still available bandwidth of the FireWire bus how it is reported by the isochronous resource manager.
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="UseIRMForCHNMode">
+            Only available for Firewire devices.
+            This parameter determines whether to use the isochronous resource manager for allocating the isochronous channel the camera runs on or to use the isochronous channel that was set with IsoChannel feature.
+            
+            Supported States: 
+            
+            on        - use the isochronous resource manager 
+            off       - use the channel set with IsoChannel feature
+        
+        </AdaptorHelp>
+        
+        <AdaptorHelp property="CamAcceptDelay">
+            Only available for Firewire devices.
+            
+            After some register writes on camera registers the system waits and lets the camera device process data.
+            
+            The feature value represents this time in milliseconds. The default value is 3 milliseconds.		
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="IsoChannel">
+            Only available for Firewire devices.
+            
+            This parameter sets the isochronous channel that shall be used by the camera.
+            
+            To make this parameter become effective you must set UseIRMForCHN to off state.		
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="CycleTime">
+            Only available for Firewire devices.
+            
+            This parameter's value represents the actual bus time in the following format:
+            
+                        struct
+                        {
+                            UINT32 CycleOffset : 12;
+                            UINT32 CycleCount : 13;
+                            UINT32 Second : 7;
+                        }BUSTIME;
+            
+            or also 
+                        Bit[11..0] = Cycle Offset in parts of 1/3072 (=24.576 MHz)
+                        Bit[24..12] = Cycle Count
+                        Bit[31..25] = Second Count		
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="DoBusTrigger">
+            For FireWire cameras only. Broadcast command to trigger all cameras on bus.
+            
+            Supported Values: 
+            TRUE(1)   - do a busstrigger
+            FALSE(0)  - camera does not do a bustrigger
+            
+            <SeeAlso>DoBusTriggerMode</SeeAlso>
+
+        </AdaptorHelp>
+        
+		<AdaptorHelp property="DoBusTriggerMode">
+            Sets the DoBusTrigger state of the camera.
+            
+            Supported States: 
+
+            onepush   - invoke a bustrigger 
+            off       - camera does not do a bustrigger 
+            
+            <SeeAlso>DoBusTrigger</SeeAlso>
+
+        </AdaptorHelp>
+
+        <AdaptorHelp property="DoMultiBusTrigger">
+            For FireWire cameras only. Broadcast command to trigger all cameras on the selected cards.
+            
+            Supported Values: 
+            Bitmask   - Mask defining what cards shall receive the trigger
+
+		</AdaptorHelp>
+		
+		<AdaptorHelp property="OpenReadOnlyMode">
+		    For GigE cameras only. Determine if the selected camera should be opened in read-only mode.
+
+            Supported States:
+            
+            on        - Use the camera only for reading feature states
+            off       - Default. Use the camera normally for full control.
+            
+		</AdaptorHelp>
+
+		<AdaptorHelp property="DetectExtControlledCamerasMode">
+		    For GigE cameras only. Enables or disables the detection of cameras controlled by external applications.
+		    
+		    Supported States:
+		    
+		    on        - Use all available cameras
+		    off       - Default. Only list available cameras.
+		    
+		</AdaptorHelp>
+
+		<AdaptorHelp property="NetworkPacketSize">
+		    For GigE cameras only. Controls the size of packets used for image transfer.
+		
+		    The greater the value for the packet size, the lower the CPU load on the PC.
+		    But setting the packet size to a value greater than the maximum transmission unit (MTU)
+		    of the underlying network results in incomplete or corrupt image data.
+
+		    <SeeAlso>NetworkPacketSizeMode</SeeAlso>
+		
+		</AdaptorHelp>
+
+		<AdaptorHelp property="NetworkPacketSizeMode">
+		    Specify the NetworkPacketSize property to be controlled by supported states.
+
+		    Supported States:
+
+            on        - this feature is always on and can not be turned off
+            onepush   - the cameras fires test packets to determine the maximum packet size
+		
+            The onepush state can be used to automatically determine the maximum possible packet size for the current network topology.
+
+		    <SeeAlso>NetworkPacketSize</SeeAlso>
+
+		</AdaptorHelp>
+		
+		<AdaptorHelp property="IPAddress">
+		    For GigE cameras only.
+		    IP address configuration of the camera.
+        
+        </AdaptorHelp>
+        
+		<AdaptorHelp property="IPConfigMode">
+		    For GigE cameras only.
+		    Tells which method was used to set the IP address information.
+        
+            Supported Modes:
+            
+            persistent - Use persistent (fixed) IP address stored in the camera. 
+            DHCP       - Ask a DHCP server for an IP address. Fall back to Auto IP in case of failure. 
+            auto       - Use an automatically assigned IP address (LLA = link-local address). 
+         
+        </AdaptorHelp>
+
+		<AdaptorHelp property="IPDefaultGateway">
+		    For GigE cameras only.
+			Default gateway configuration of the camera.
+        
+        </AdaptorHelp>
+
+		<AdaptorHelp property="IPSubnetMask">
+    		For GigE cameras only.
+			Subnet mask configuration of the camera.
+        
+        </AdaptorHelp>
+
+		<AdaptorHelp property="DirectRegisterAccessAddress">
+            Address of register to access.
+            
+            Default value 0xF0F00000.
+            
+            <SeeAlso>DirectRegisterAccessData, DirectRegisterAccessMode</SeeAlso>
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="DirectRegisterAccessData">
+            Data of register to access.
+            
+            Default value 0x00000000.
+            
+            <SeeAlso>DirectRegisterAccessAddress, DirectRegisterAccessMode</SeeAlso>
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="DirectRegisterAccessMode">
+            Mode of register access.
+            
+            Supported States:
+            
+            idle      - idle state, no operation        
+            read      - get the value of the given register.
+            write     - set the given register value.
+            
+            used in case of read/write:
+            The address of the register.
+            The new value to set.
+            
+            <SeeAlso>DirectRegisterAccessAddress, DirectRegisterAccessData</SeeAlso>
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="InputPin1Mode">
+            State of input pin1.
+            
+            Supported States:
+            
+            off           - pin disabled
+            trigger       - pin signaled by trigger 
+            triggerInvert - pin signaled by inverted trigger signal
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="InputPin2Mode">
+            State of input pin2.
+            
+            Supported States:
+            
+            off           - pin disabled
+            trigger       - pin signaled by trigger 
+            triggerInvert - pin signaled by inverted trigger signal
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="InputPin3Mode">
+            State of input pin3.
+            
+            Supported States:
+            
+            off           - pin disabled
+            trigger       - pin signaled by trigger 
+            triggerInvert - pin signaled by inverted trigger signal
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="InputPin4Mode">
+            State of input pin4.
+            
+            Supported States:
+            
+            off           - pin disabled
+            trigger       - pin signaled by trigger 
+            triggerInvert - pin signaled by inverted trigger signal
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="OutputPin1Mode">
+            State of output pin1.
+            
+            Supported States:
+            
+            off           - pin disabled
+            intEna        - signaling while integrating image  
+            clear         - output pin state 0
+            set           - output pin state 1
+            frameValid    - signaling after integration, when frame is ready 
+            busy          - signaling while 
+            followIn      - while exposure, sensor read out and data transmission 
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="OutputPin2Mode">
+            State of output pin2.
+            
+            Supported States:
+            
+            off           - pin disabled
+            intEna        - signaling while integrating image  
+            clear         - output pin state 0
+            set           - output pin state 1
+            frameValid    - signaling after integration, when frame is ready 
+            busy          - signaling while 
+            followIn      - while exposure, sensor read out and data transmission 
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="OutputPin3Mode">
+            State of output pin3.
+            
+            Supported States:
+            
+            off           - pin disabled
+            intEna        - signaling while integrating image  
+            clear         - output pin state 0
+            set           - output pin state 1
+            frameValid    - signaling after integration, when frame is ready 
+            busy          - signaling while 
+            followIn      - while exposure, sensor read out and data transmission 
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="OutputPin4Mode">
+            State of output pin4.
+            
+            Supported States:
+            
+            off           - pin disabled
+            intEna        - signaling while integrating image  
+            clear         - output pin state 0
+            set           - output pin state 1
+            frameValid    - signaling after integration, when frame is ready 
+            busy          - signaling while 
+            followIn      - while exposure, sensor read out and data transmission 
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="XMLFile">
+            Camera configuration XML file name.
+            
+            Default file name is Default.xml.
+            
+            Automatic camera configuration
+            
+            One possibility to keep a camera configuration over session boundaries is to store a camera configuration into an XML file with the name of your choice.
+            
+            This is done with the XMLSettingsMode 'save' or 'savefamily' mode.
+            
+            Restoring a camera configuration is as easy as that: the XMLSettingsMode 'load' or 'loadtype' modereads settings from a previously written file and writes them to a camera.
+            
+            The DTD for the XML file used is described on page XML settings files.
+            
+            Remember to read the camera configuration back to your program
+            so that you can adjust your display parameters to the parameters of the camera.
+            
+            <SeeAlso>XMLSettingsMode</SeeAlso>
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="XMLSettingsMode">
+            Supported States:
+            
+            load          - Load the camera settings from file. Exact camera ID is used for finding camera settings inside the file.
+            loadtype      - Load the camera settings from file. The camera type is used  for finding camera settings inside the file.
+            save          - Save the camera setting.
+            savefamily    - Save the camera setting. Saves camera settings for a whole camera family 
+            
+            <SeeAlso>XMLFile</SeeAlso>
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="FrameRate">
+            Frame rate for fixed modes.
+            
+            The preview has to be deactivated (stopped) before this parameter can be changed.
+            
+            Supported Values:
+            
+            1.875
+            3.75
+            7.5
+            15
+            30
+            60
+            120
+            240
+            
+		</AdaptorHelp>
+<!-- 
+		<AdaptorHelp property="TriggerSource">
+            Trigger - TriggerType - Hardware ..
+            
+            Configure the trigger feature.
+            
+            Supported State:
+            
+            externalTrigger - external trigger is used
+            
+            Note:
+            For triggered image acquisition at least one input pin has to be chosen as trigger input by using
+            <SeeAlso>InputPin1Mode, InputPin2Mode, InputPin3Mode, InputPin4Mode</SeeAlso>
+            properties.
+		
+		</AdaptorHelp>
+		
+		<AdaptorHelp property="TriggerCondition">
+            Trigger - TriggerType - Hardware ..
+            
+            Configure the trigger feature.
+            
+            Supported State:
+            
+            fallingEdge     - Camera starts integration of the incoming light from external trigger input falling edge.
+            risingEdge      - Camera starts integration of the incoming light from external trigger input rising edge.
+            highactiveLevel - Camera starts integration of the incoming light from external trigger input rising edge.
+                              Integration time is equal to high state time of the external trigger input.
+            lowactiveLevel  - Camera starts integration of the incoming light from external trigger input falling edge.
+                              Integration time is equal to low state time of the external trigger input.
+
+		</AdaptorHelp>
+
+		<AdaptorHelp property="DigitalIOAndTriggerOpertation">
+            Digital IO and trigger operation 
+            
+            Introduction
+            
+            This chapter explains the usage of digital IO and trigger features.
+            
+            
+            Digital IO
+            
+            Digital IO may be configured by the properties InputPin1Mode, InputPin2Mode, InputPin3Mode, InputPin4Mode, OutputPin1Mode, OutputPin2Mode, OutputPin3Mode, OutputPin4Mode.
+            Each IO pin can be configured separately regarding the mode of operation and polarity.
+            For supported input and output modes consult the camera manual.
+            
+            
+            Trigger
+            
+            The trigger feature allows image acquisition control based on the state of one or more input pins.
+            For trigger configuration use TriggerCondition.
+            Usage of the trigger feature requires at least one input pin to be configured for trigger mode.
+            The cameras trigger feature may support several modes of operation, initially defined by the IIDC standard.
+            AVT cameras usually support the following trigger condition: TriggerCondition.
+            
+            For TriggerCondition 'fallingEdge' and 'risingEdge' state
+            the trigger starts the acquisition of single images with fixed exposure duration
+            as configured by the Shutter and <SeeAlso>ExtendedShutter</SeeAlso> property.
+            Trigger signals may be delayed by usage of the TriggerDelayADV property.
+            DelayedIntegrationEnable property allows additional customization of the
+            TriggerCondition 'highactiveLevel' and 'lowactiveLevel' state,
+            as it delays only the start of the exposure period.
+            
+            See the camera manual for further details about trigger operation.
+            <SeeAlso>TriggerCondition, Shutter, TriggerDelayADV, DelayedIntegrationEnable, InputPin1Mode, InputPin2Mode, InputPin3Mode, InputPin4Mode, OutputPin1Mode, OutputPin2Mode, OutputPin3Mode, OutputPin4Mode</SeeAlso>.
+		</AdaptorHelp>
+-->
+	</Help>
+</ImageAcquisitionInfo>

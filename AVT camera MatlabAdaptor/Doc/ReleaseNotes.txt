@@ -1,0 +1,134 @@
+
+=============================================================================
+AVT Adaptor for MATLAB® Image Acquisition - Release Notes
+
+Version: 2.0.0
+Date:    June 14, 2011
+=============================================================================
+
+--------------------------------
+Components and Version Reference  
+--------------------------------
+The AVT Adaptor for MATLAB® Image Acquisition is available for several MATLAB® 
+releases:
+
+32bit Windows operating systems
+-------------------------------
+
+R2008b and R2009a 
+-----------------
+- AVT Adaptor DLL       AVTMatlabAdaptor_R2008b.dll  v2.1.0 
+- MATLAB® help file     AVTMatlabAdaptor_R2008b.idmf
+
+R2009b or later
+---------------
+- AVT Adaptor DLL       AVTMatlabAdaptor_R2009b.dll  v2.1.0
+- MATLAB® help file     AVTMatlabAdaptor_R2009b.idmf
+
+64bit Windows operating systems
+-------------------------------
+
+R2009b or later
+---------------
+- AVT Adaptor DLL       AVTMatlabAdaptor64_R2009b.dll  v2.1.0
+- MATLAB® help file     AVTMatlabAdaptor64_R2009b.idmf
+
+Additionally, M-files are provided to register and unregister the adaptor:
+- registerAVTMatlabAdaptor.m
+- unregisterAVTMatlabAdaptor.m
+
+
+---------------------
+Hardware Requirements
+---------------------
+PC or laptop with 1 GHz 32-bit (x86) or 64-bit (x64) processor or better.
+
+For further hardware requirements please refer to the AVT Universal Package 
+release notes.
+
+
+---------------------------
+Supported Operating Systems
+---------------------------
+The AVT Adaptor for MATLAB® Image Acquisition is designed for the 32-bit and 64-bit 
+Windows operating systems:
+
+   Windows 7, Vista, and XP
+
+
+---------------------
+Software Requirements
+---------------------
+Before installing the AVT Adaptor for MATLAB® Image Acquisition please make 
+sure that the following software packages are installed:
+  + The MathWorks - MATLAB® version 7.7 (R2008b) or later
+  + AVT Universal Package version 2.0 or later
+    The software can be downloaded free of charge under
+    http://www.alliedvisiontec.com/us/products/software/windows/avt-universal-package.html
+
+For further information about the AVT Universal Package and its requirements 
+please refer to the corresponding release notes.
+
+
+
+------------
+Installation
+------------            
+The AVT Adaptor for MATLAB® Image Acquisition currently consists of two files:
+  - AVTMatlabAdaptor_2_0_0.exe      Required to install the adaptor
+  - ReleaseNotes.txt                This file
+
+To install the AVT Adaptor for MATLAB® Image Acquisition simply start the 
+AVTMatlabAdaptor.exe and follow the instructions shown on the screen.
+
+
+
+-------------------
+Current Limitations
+-------------------
+- The AVT Adaptor for MATLAB® Image Acquisition lists all image formats 
+  supported by the associated camera. Depending on the 1394 bus topology some 
+  fixed formats may not work. 
+  For example: Setting a camera to image format 800x600 RGB8 with 30 frames per 
+  second only works, when the camera is connected to the PC via an S800 
+  interface.
+
+- The Image formats Raw16, Mono16, Raw12, Mono12, YUV411, and YUV422 are not
+  displayed properly in the Image Acquisition Toolbox, because the pixel data
+  structure of these formats cannot be set in the Image Acquisition Toolbox.
+  However using these image formats within M-files does not cause any problems.
+
+- For decoding 16 bit image formats the user can use MATLAB’s swapbyte() function
+  to transform the image data into a format that can be displayed in MATLAB.
+
+- Interlaced cameras will not be supported.
+
+- When hardware trigger is enabled all trigger signals received within the 
+  first 100ms after starting the image acquisition will be ignored by the 
+  camera.
+
+- Some device properties can not be used in case preview is running. 
+  Please refer to the help file for details.
+
+
+------------------------------
+AVT Technical Software Support
+------------------------------
+You can reach the AVT Technical Software Support via the corresponding contact 
+form for your region:
+
+   Asia Pacific
+   ------------
+        http://www.alliedvisiontec.com/apac/support/contact-support.html 
+   
+   Europe, Middle East and Africa 
+   ------------------------------
+        http://www.alliedvisiontec.com/emea/support/contact-support.html
+  
+   Germany
+   -------
+        http://www.alliedvisiontec.com/de/support/support-kontaktieren.html
+
+   The Americas
+   ------------
+        http://www.alliedvisiontec.com/us/support/contact-support.html
