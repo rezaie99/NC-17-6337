@@ -8,6 +8,7 @@ function signal = transformProgramIntoSignal(progLine)
 %nb of bursts
 
 
+
 firstShock = progLine(:,1)*100;%unit is 10ms, 100Hz
 shockDur = progLine(:,2);
 nbShocks = progLine(:,3);
@@ -41,5 +42,6 @@ end
 % axis([1 trialDuration -1 2]);
 % xlabel('time [ms]')
 % ylabel('signal')
+%
 
 end
